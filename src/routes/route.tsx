@@ -7,7 +7,7 @@ import ErrorPage from '../pages/ErrorPage';
 import HomePage from '../pages/HomePage/HomePage';
 import ProfilePage from '../pages/ProfilePage/ProfilePage';
 import SettingsPage from '../pages/SettingsPage/SettingsPage';
-import SignInPage from '../pages/SigInPage/SignInPage';
+import SignInPage from '../pages/SignInPage/SignInPage';
 import SignUpPage from '../pages/SignUpPage/SignUpPage';
 import MyAricles from '../pages/ProfilePage/MyAricles';
 import FavoritedArticles from '../pages/ProfilePage/FavoritedArticles';
