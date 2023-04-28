@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { Root } from './Root';
+import Root from './Root';
 import ArticlePage from '../pages/ArticlePage/ArticlePage';
 import CreatePage from '../pages/CreatePage/CreatePage';
 import EditPage from '../pages/EditPage/EditPage';

@@ -1,14 +1,24 @@
-import { useState } from 'react';
-import { Form, Link, useSubmit } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import useInputs from '../../hooks/useInputs';
+import { isLoginSelector, userInfoAtom } from '../../recoil/recoil_state';
 
 function SignInPage(): JSX.Element {
   const [{ email, password }, onChange] = useInputs({
     email: '',
     password: '',
   });
-  const [error, setError] = useState('');
-  const submit = useSubmit();
+  const [displayError, setDisplayError] = useState('');
+  const navigate = useNavigate();
+  const setUserInfo = useSetRecoilState(userInfoAtom);
+  const isLogin = useRecoilValue(isLoginSelector);
+
+  useEffect(() => {
+    if (isLogin) {
+      navigate(-1);
+    }
+  }, []);
 
   const isEmpty = (str: string): boolean => str.length === 0;
 
@@ -21,14 +31,50 @@ function SignInPage(): JSX.Element {
       newError = "password can't be blank";
     }
 
-    setError(newError);
+    setDisplayError(newError);
     return newError.length === 0;
+  };
+
+  const submit = async (): Promise<void> => {
+    try {
+      const data = { user: { email, password } };
+      const response = await fetch('https://api.realworld.io/api/users/login', {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const responseData = await response.json();
+      if (!response.ok) {
+        if (responseData.errors['email or password'][0] === 'is invalid') {
+          setDisplayError('email or password is invalid');
+        } else {
+          setDisplayError('email or password is invalid');
+        }
+        throw new Error(`서버에 이상이 있습니다 status: ${response.status}`);
+      }
+
+      setUserInfo(responseData);
+      navigate('/');
+    } catch (responseError) {
+      if (responseError instanceof Error) {
+        throw new Error(responseError.message);
+      } else {
+        throw new Error('An unexpected error occurred.');
+      }
+    }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     if (validateForm()) {
-      submit(e.currentTarget);
+      (async () => {
+        await submit();
+      })().catch((submitError) => {
+        console.error(submitError);
+      });
     }
   };
 
@@ -43,10 +89,10 @@ function SignInPage(): JSX.Element {
             </p>
 
             <ul className="error-messages">
-              {!(error.length === 0) && <li>{error}</li>}
+              {!(displayError.length === 0) && <li>{displayError}</li>}
             </ul>
 
-            <Form method="post" onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
               <fieldset className="form-group">
                 <input
                   className="form-control form-control-lg"
@@ -73,7 +119,7 @@ function SignInPage(): JSX.Element {
               >
                 Sign up
               </button>
-            </Form>
+            </form>
           </div>
         </div>
       </div>
