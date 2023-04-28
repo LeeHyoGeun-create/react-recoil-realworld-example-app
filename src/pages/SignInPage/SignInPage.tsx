@@ -4,6 +4,8 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import useInputs from '../../hooks/useInputs';
 import { isLoginSelector, userInfoAtom } from '../../recoil/recoil_state';
 
+const { VITE_API_URL } = import.meta.env;
+
 function SignInPage(): JSX.Element {
   const [{ email, password }, onChange] = useInputs({
     email: '',
@@ -38,7 +40,7 @@ function SignInPage(): JSX.Element {
   const submit = async (): Promise<void> => {
     try {
       const data = { user: { email, password } };
-      const response = await fetch('https://api.realworld.io/api/users/login', {
+      const response = await fetch(`${VITE_API_URL}/users/login`, {
         method: 'post',
         headers: {
           'Content-Type': 'application/json',
