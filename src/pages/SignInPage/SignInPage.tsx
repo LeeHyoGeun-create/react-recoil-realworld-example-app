@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import useInputs from '../../hooks/useInputs';
 import { isLoginSelector, userInfoAtom } from '../../recoil/recoil_state';
+import isEmpty from '../../util/isEmpty';
 
 const { VITE_API_URL } = import.meta.env;
 
@@ -21,8 +22,6 @@ function SignInPage(): JSX.Element {
       navigate(-1);
     }
   }, []);
-
-  const isEmpty = (str: string): boolean => str.length === 0;
 
   const validateForm = (): boolean => {
     let newError = '';
