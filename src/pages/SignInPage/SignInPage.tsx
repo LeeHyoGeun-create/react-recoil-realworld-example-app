@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import ShowError from '../../components/ShowError';
 import useInputs from '../../hooks/useInputs';
 import { isLoginSelector, userInfoAtom } from '../../recoil/recoil_state';
 import isEmpty from '../../util/isEmpty';
@@ -12,7 +13,7 @@ function SignInPage(): JSX.Element {
     email: '',
     password: '',
   });
-  const [displayError, setDisplayError] = useState('');
+  const [displayError, setDisplayError] = useState({});
   const navigate = useNavigate();
   const setUserInfo = useSetRecoilState(userInfoAtom);
   const isLogin = useRecoilValue(isLoginSelector);
@@ -24,16 +25,16 @@ function SignInPage(): JSX.Element {
   }, []);
 
   const validateForm = (): boolean => {
-    let newError = '';
+    let newError = {};
 
     if (isEmpty(email)) {
-      newError = "email can't be blank";
+      newError = { ...newError, ...{ email: "can't be blank" } };
     } else if (isEmpty(password)) {
-      newError = "password can't be blank";
+      newError = { ...newError, ...{ password: "can't be blank" } };
     }
 
     setDisplayError(newError);
-    return newError.length === 0;
+    return Object.keys(newError).length === 0;
   };
 
   const submit = async (): Promise<void> => {
@@ -49,10 +50,8 @@ function SignInPage(): JSX.Element {
 
       const responseData = await response.json();
       if (!response.ok) {
-        if (responseData.errors['email or password'][0] === 'is invalid') {
-          setDisplayError('email or password is invalid');
-        } else {
-          setDisplayError('email or password is invalid');
+        if (response.status === 403) {
+          setDisplayError(responseData.errors);
         }
         throw new Error(`서버에 이상이 있습니다 status: ${response.status}`);
       }
@@ -90,7 +89,9 @@ function SignInPage(): JSX.Element {
             </p>
 
             <ul className="error-messages">
-              {!(displayError.length === 0) && <li>{displayError}</li>}
+              {!(Object.keys(displayError).length === 0) && (
+                <>{ShowError(displayError)}</>
+              )}
             </ul>
 
             <form onSubmit={handleSubmit}>
