@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import useInputs from '../../hooks/useInputs';
-import isEmpty from '../../util/isEmpty';
-import { userInfoAtom, isLoginSelector } from '../../recoil/recoil_state';
 import ShowError from '../../components/ShowError';
+import useInputs from '../../hooks/useInputs';
+import { isLoginSelector, userInfoAtom } from '../../recoil/recoil_state';
+import isEmpty from '../../util/isEmpty';
 
-function SignUpPage(): JSX.Element {
-  const [{ username, email, password }, onChange] = useInputs({
-    username: '',
+const { VITE_API_URL } = import.meta.env;
+
+function SignInPage(): JSX.Element {
+  const [{ email, password }, onChange] = useInputs({
     email: '',
     password: '',
   });
@@ -16,8 +17,6 @@ function SignUpPage(): JSX.Element {
   const navigate = useNavigate();
   const setUserInfo = useSetRecoilState(userInfoAtom);
   const isLogin = useRecoilValue(isLoginSelector);
-
-  const { VITE_API_URL } = import.meta.env;
 
   useEffect(() => {
     if (isLogin) {
@@ -32,8 +31,6 @@ function SignUpPage(): JSX.Element {
       newError = { ...newError, ...{ email: "can't be blank" } };
     } else if (isEmpty(password)) {
       newError = { ...newError, ...{ password: "can't be blank" } };
-    } else if (isEmpty(username)) {
-      newError = { ...newError, ...{ username: "can't be blank" } };
     }
 
     setDisplayError(newError);
@@ -42,8 +39,8 @@ function SignUpPage(): JSX.Element {
 
   const submit = async (): Promise<void> => {
     try {
-      const data = { user: { username, email, password } };
-      const response = await fetch(`${VITE_API_URL}/users`, {
+      const data = { user: { email, password } };
+      const response = await fetch(`${VITE_API_URL}/users/login`, {
         method: 'post',
         headers: {
           'Content-Type': 'application/json',
@@ -53,7 +50,7 @@ function SignUpPage(): JSX.Element {
 
       const responseData = await response.json();
       if (!response.ok) {
-        if (response.status === 422) {
+        if (response.status === 403) {
           setDisplayError(responseData.errors);
         }
         throw new Error(`서버에 이상이 있습니다 status: ${response.status}`);
@@ -86,9 +83,9 @@ function SignUpPage(): JSX.Element {
       <div className="container page">
         <div className="row">
           <div className="col-md-6 offset-md-3 col-xs-12">
-            <h1 className="text-xs-center">Sign up</h1>
+            <h1 className="text-xs-center">Sign in</h1>
             <p className="text-xs-center">
-              <Link to="/login">Have an account?</Link>
+              <Link to="/register">Need an account?</Link>
             </p>
 
             <ul className="error-messages">
@@ -101,31 +98,21 @@ function SignUpPage(): JSX.Element {
               <fieldset className="form-group">
                 <input
                   className="form-control form-control-lg"
-                  type="text"
-                  placeholder="Your Name"
-                  name="username"
-                  value={username}
-                  onChange={onChange}
-                />
-              </fieldset>
-              <fieldset className="form-group">
-                <input
-                  className="form-control form-control-lg"
                   type="email"
-                  placeholder="Email"
                   name="email"
                   value={email}
                   onChange={onChange}
+                  placeholder="Email"
                 />
               </fieldset>
               <fieldset className="form-group">
                 <input
                   className="form-control form-control-lg"
                   type="password"
-                  placeholder="Password"
                   name="password"
                   value={password}
                   onChange={onChange}
+                  placeholder="Password"
                 />
               </fieldset>
               <button
@@ -142,4 +129,4 @@ function SignUpPage(): JSX.Element {
   );
 }
 
-export default SignUpPage;
+export default SignInPage;
