@@ -1,10 +1,18 @@
 import { Link, NavLink } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { isLoginSelector, userInfoAtom } from '../recoil/recoil_state';
 
 function Header(): JSX.Element {
   interface ClassNameProps {
     isActive: boolean;
     isPending: boolean;
   }
+
+  const isLogin = useRecoilValue(isLoginSelector);
+  const userInfo = useRecoilValue(userInfoAtom);
+
+  console.log(userInfo);
+  console.log(isLogin);
 
   const getClassName = ({ isActive, isPending }: ClassNameProps): string => {
     let className = 'nav-link';
@@ -42,16 +50,36 @@ function Header(): JSX.Element {
               &nbsp;Settings{' '}
             </NavLink>
           </li>
-          <li className="nav-item">
-            <NavLink className={getClassName} to="/login">
-              Sign in
-            </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink className={getClassName} to="/register">
-              Sign up
-            </NavLink>
-          </li>
+          {isLogin ? (
+            <li className="nav-item">
+              <NavLink
+                className={getClassName}
+                to={`/profile/${
+                  userInfo.user.username !== null ? userInfo.user.username : ''
+                }`}
+              >
+                <img
+                  alt="profile"
+                  className="user-pic"
+                  src={userInfo.user.image !== null ? userInfo.user.image : ''}
+                />
+                {userInfo.user.username !== null ? userInfo.user.username : ''}
+              </NavLink>
+            </li>
+          ) : (
+            <>
+              <li className="nav-item">
+                <NavLink className={getClassName} to="/login">
+                  Sign in
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className={getClassName} to="/register">
+                  Sign up
+                </NavLink>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     </nav>
