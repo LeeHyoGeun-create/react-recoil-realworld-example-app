@@ -1,6 +1,23 @@
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 function Header(): JSX.Element {
+  interface ClassNameProps {
+    isActive: boolean;
+    isPending: boolean;
+  }
+
+  const getClassName = ({ isActive, isPending }: ClassNameProps): string => {
+    let className = 'nav-link';
+
+    if (isActive) {
+      className += ' active';
+    } else if (isPending) {
+      className += ' pending';
+    }
+
+    return className;
+  };
+
   return (
     <nav className="navbar navbar-light">
       <div className="container">
@@ -9,32 +26,31 @@ function Header(): JSX.Element {
         </Link>
         <ul className="nav navbar-nav pull-xs-right">
           <li className="nav-item">
-            {/* <!-- Add "active" className when you're on that page" --> */}
-            <Link className="nav-link active" to="/">
+            <NavLink className={getClassName} to="/">
               Home
-            </Link>
+            </NavLink>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/editor">
+            <NavLink className={getClassName} to="/editor">
               <i className="ion-compose" />
               &nbsp;New Article{' '}
-            </Link>
+            </NavLink>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/settings">
+            <NavLink className={getClassName} to="/settings">
               <i className="ion-gear-a" />
               &nbsp;Settings{' '}
-            </Link>
+            </NavLink>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/login">
+            <NavLink className={getClassName} to="/login">
               Sign in
-            </Link>
+            </NavLink>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/register">
+            <NavLink className={getClassName} to="/register">
               Sign up
-            </Link>
+            </NavLink>
           </li>
         </ul>
       </div>
