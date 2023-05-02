@@ -37,6 +37,6 @@ export const isLoginSelector = selector({
   key: 'isLoginSelector',
   get: ({ get }) => {
     const userInfo = get(userInfoAtom);
-    return userInfo !== null;
+    return userInfo.user.token !== null;
   },
 });
