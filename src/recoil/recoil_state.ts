@@ -6,17 +6,30 @@ const { persistAtom: persistUserInfo } = recoilPersist({
   storage: localStorage, // configurate which stroage will be used to store the data
 });
 
-export const userInfoAtom = atom({
+interface User {
+  email: string | null;
+  token: string | null;
+  username: string | null;
+  bio: string | null;
+  image: string | null;
+}
+
+interface UserInfo {
+  user: User;
+}
+
+export const userInfoAtom = atom<UserInfo>({
   key: 'userInfoAtom',
   default: {
     user: {
-      email: 'string',
-      token: 'string',
-      username: 'string',
-      bio: 'string',
-      image: 'string',
+      email: null,
+      token: null,
+      username: null,
+      bio: null,
+      image: null,
     },
   },
+
   effects_UNSTABLE: [persistUserInfo],
 });
 
@@ -24,6 +37,6 @@ export const isLoginSelector = selector({
   key: 'isLoginSelector',
   get: ({ get }) => {
     const userInfo = get(userInfoAtom);
-    return Object.keys(userInfo).length > 0;
+    return userInfo.user.token !== null;
   },
 });
