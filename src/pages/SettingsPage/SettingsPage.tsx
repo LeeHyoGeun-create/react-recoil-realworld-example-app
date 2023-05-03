@@ -1,4 +1,15 @@
+import useInputs from '../../hooks/useInputs';
+
 function SettingsPage(): JSX.Element {
+  const [form, onChange] = useInputs({
+    image: '',
+    username: '',
+    bio: '',
+    email: '',
+    password: '',
+  });
+  const { image, username, bio, email, password } = form;
+
   return (
     <div className="settings-page">
       <div className="container page">
@@ -12,6 +23,9 @@ function SettingsPage(): JSX.Element {
                     className="form-control"
                     type="text"
                     placeholder="URL of profile picture"
+                    name="image"
+                    value={image}
+                    onChange={onChange}
                   />
                 </fieldset>
                 <fieldset className="form-group">
@@ -19,6 +33,9 @@ function SettingsPage(): JSX.Element {
                     className="form-control form-control-lg"
                     type="text"
                     placeholder="Your Name"
+                    name="username"
+                    value={username}
+                    onChange={onChange}
                   />
                 </fieldset>
                 <fieldset className="form-group">
@@ -26,13 +43,19 @@ function SettingsPage(): JSX.Element {
                     className="form-control form-control-lg"
                     rows={8}
                     placeholder="Short bio about you"
+                    name="bio"
+                    value={bio}
+                    onChange={onChange}
                   />
                 </fieldset>
                 <fieldset className="form-group">
                   <input
                     className="form-control form-control-lg"
-                    type="text"
+                    type="email"
                     placeholder="Email"
+                    name="email"
+                    value={email}
+                    onChange={onChange}
                   />
                 </fieldset>
                 <fieldset className="form-group">
@@ -40,6 +63,9 @@ function SettingsPage(): JSX.Element {
                     className="form-control form-control-lg"
                     type="password"
                     placeholder="Password"
+                    name="password"
+                    value={password}
+                    onChange={onChange}
                   />
                 </fieldset>
                 <button
