@@ -7,11 +7,11 @@ const { persistAtom: persistUserInfo } = recoilPersist({
 });
 
 interface User {
-  email: string | null;
-  token: string | null;
-  username: string | null;
-  bio: string | null;
-  image: string | null;
+  email: string;
+  token: string;
+  username: string;
+  bio: string;
+  image: string;
 }
 
 interface UserInfo {
@@ -22,11 +22,11 @@ export const userInfoAtom = atom<UserInfo>({
   key: 'userInfoAtom',
   default: {
     user: {
-      email: null,
-      token: null,
-      username: null,
-      bio: null,
-      image: null,
+      email: '',
+      token: '',
+      username: '',
+      bio: '',
+      image: '',
     },
   },
 
@@ -37,6 +37,6 @@ export const isLoginSelector = selector({
   key: 'isLoginSelector',
   get: ({ get }) => {
     const userInfo = get(userInfoAtom);
-    return userInfo.user.token !== null;
+    return userInfo.user.token.length > 0;
   },
 });
