@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useResetRecoilState } from 'recoil';
 import useInputs from '../../hooks/useInputs';
 import { userInfoAtom } from '../../recoil/recoil_state';
 
 function SettingsPage(): JSX.Element {
   const [userInfo, setUserInfo] = useRecoilState(userInfoAtom);
+  const userInfoReset = useResetRecoilState(userInfoAtom);
   const [form, onChange] = useInputs({
     image: userInfo.user.image,
     username: userInfo.user.username,
@@ -62,6 +63,11 @@ function SettingsPage(): JSX.Element {
     })().catch((submitError) => {
       console.error(submitError);
     });
+  };
+
+  const handleLogout = (): void => {
+    userInfoReset();
+    navigate('/');
   };
 
   return (
@@ -131,7 +137,11 @@ function SettingsPage(): JSX.Element {
               </fieldset>
             </form>
             <hr />
-            <button type="button" className="btn btn-outline-danger">
+            <button
+              type="button"
+              className="btn btn-outline-danger"
+              onClick={handleLogout}
+            >
               Or click here to logout.
             </button>
           </div>
