@@ -1,40 +1,51 @@
 import { useNavigate } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import useInputs from '../../hooks/useInputs';
 import { userInfoAtom } from '../../recoil/recoil_state';
 
 function SettingsPage(): JSX.Element {
+  const [userInfo, setUserInfo] = useRecoilState(userInfoAtom);
   const [form, onChange] = useInputs({
-    image: '',
-    username: '',
-    bio: '',
-    email: '',
+    image: userInfo.user.image,
+    username: userInfo.user.username,
+    bio: userInfo.user.bio,
+    email: userInfo.user.email,
     password: '',
   });
   const { image, username, bio, email, password } = form;
   const navigate = useNavigate();
-  const setUserInfo = useSetRecoilState(userInfoAtom);
 
   const { VITE_API_URL } = import.meta.env;
 
-  const submit = async (): Promise<void> => {
+  interface UserResponse {
+    user: {
+      email: string;
+      token: string;
+      username: string;
+      bio: string;
+      image: string;
+    };
+  }
+
+  const edit = async (): Promise<void> => {
     try {
       const data = { user: form };
-      const response = await fetch(`${VITE_API_URL}/users/login`, {
+      const response = await fetch(`${VITE_API_URL}/user`, {
         method: 'put',
         headers: {
+          authorization: `Bearer ${userInfo.user.token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
 
-      const responseData = await response.json();
+      const responseData: UserResponse = await response.json();
       if (!response.ok) {
         throw new Error(`서버에 이상이 있습니다 status: ${response.status}`);
       }
 
       setUserInfo(responseData);
-      navigate('/');
+      navigate(`/profile/${responseData.user.username}`);
     } catch (responseError) {
       if (responseError instanceof Error) {
         throw new Error(responseError.message);
@@ -47,7 +58,7 @@ function SettingsPage(): JSX.Element {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     (async () => {
-      await submit();
+      await edit();
     })().catch((submitError) => {
       console.error(submitError);
     });
