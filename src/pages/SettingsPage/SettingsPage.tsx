@@ -1,4 +1,7 @@
+import { useNavigate } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
 import useInputs from '../../hooks/useInputs';
+import { userInfoAtom } from '../../recoil/recoil_state';
 
 function SettingsPage(): JSX.Element {
   const [form, onChange] = useInputs({
@@ -9,6 +12,46 @@ function SettingsPage(): JSX.Element {
     password: '',
   });
   const { image, username, bio, email, password } = form;
+  const navigate = useNavigate();
+  const setUserInfo = useSetRecoilState(userInfoAtom);
+
+  const { VITE_API_URL } = import.meta.env;
+
+  const submit = async (): Promise<void> => {
+    try {
+      const data = { user: form };
+      const response = await fetch(`${VITE_API_URL}/users/login`, {
+        method: 'put',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const responseData = await response.json();
+      if (!response.ok) {
+        throw new Error(`서버에 이상이 있습니다 status: ${response.status}`);
+      }
+
+      setUserInfo(responseData);
+      navigate('/');
+    } catch (responseError) {
+      if (responseError instanceof Error) {
+        throw new Error(responseError.message);
+      } else {
+        throw new Error('An unexpected error occurred.');
+      }
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    (async () => {
+      await submit();
+    })().catch((submitError) => {
+      console.error(submitError);
+    });
+  };
 
   return (
     <div className="settings-page">
@@ -16,7 +59,7 @@ function SettingsPage(): JSX.Element {
         <div className="row">
           <div className="col-md-6 offset-md-3 col-xs-12">
             <h1 className="text-xs-center">Your Settings</h1>
-            <form>
+            <form onSubmit={handleSubmit}>
               <fieldset>
                 <fieldset className="form-group">
                   <input
