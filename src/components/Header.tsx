@@ -11,9 +11,6 @@ function Header(): JSX.Element {
   const isLogin = useRecoilValue(isLoginSelector);
   const userInfo = useRecoilValue(userInfoAtom);
 
-  console.log(userInfo);
-  console.log(isLogin);
-
   const getClassName = ({ isActive, isPending }: ClassNameProps): string => {
     let className = 'nav-link';
 
@@ -38,18 +35,22 @@ function Header(): JSX.Element {
               Home
             </NavLink>
           </li>
-          <li className="nav-item">
-            <NavLink className={getClassName} to="/editor">
-              <i className="ion-compose" />
-              &nbsp;New Article{' '}
-            </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink className={getClassName} to="/settings">
-              <i className="ion-gear-a" />
-              &nbsp;Settings{' '}
-            </NavLink>
-          </li>
+          {isLogin && (
+            <>
+              <li className="nav-item">
+                <NavLink className={getClassName} to="/editor">
+                  <i className="ion-compose" />
+                  &nbsp;New Article{' '}
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className={getClassName} to="/settings">
+                  <i className="ion-gear-a" />
+                  &nbsp;Settings{' '}
+                </NavLink>
+              </li>
+            </>
+          )}
           {isLogin ? (
             <li className="nav-item">
               <NavLink
