@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import useInputs from '../../hooks/useInputs';
+import TagList, { type TagItem } from './TagList';
 
 function CreatePage(): JSX.Element {
   const [form, onChange] = useInputs({
@@ -10,18 +12,23 @@ function CreatePage(): JSX.Element {
   const { title, description, body } = form;
 
   const [tag, setTag] = useState('');
-  const [tagList, setTagList] = useState<string[]>([]);
+  const [tagList, setTagList] = useState<TagItem[]>([]);
 
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLInputElement>,
   ): void => {
     if (event.key === 'Enter') {
-      setTagList((prev) => [tag, ...prev]);
+      setTagList((prev) => [{ id: uuidv4(), tag }, ...prev]);
+      setTag('');
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setTag(e.target.value);
+  };
+
+  const removeTag = (id: string): void => {
+    setTagList((prev) => prev.filter((tagItem) => tagItem.id !== id));
   };
 
   return (
@@ -71,12 +78,8 @@ function CreatePage(): JSX.Element {
                     onChange={handleChange}
                     onKeyDown={handleKeyDown}
                   />
-                  <div className="tag-list">
-                    <span className="tag-default tag-pill ng-binding ng-scope">
-                      <i className="ion-close-round" />
-                      et
-                    </span>
-                  </div>
+
+                  <TagList tagList={tagList} onRemoveTag={removeTag} />
                 </fieldset>
                 <button
                   className="btn btn-lg pull-xs-right btn-primary"
