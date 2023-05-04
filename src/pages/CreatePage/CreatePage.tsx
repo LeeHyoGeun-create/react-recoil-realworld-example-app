@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import ShowError from '../../components/ShowError';
 import useInputs from '../../hooks/useInputs';
+import areAllFieldsFilled from '../../util/formValidation';
 import TagList, { type TagItem } from './TagList';
 
 function CreatePage(): JSX.Element {
@@ -10,9 +12,30 @@ function CreatePage(): JSX.Element {
     body: '',
   });
   const { title, description, body } = form;
+  const [displayError, setDisplayError] = useState({});
+
+  console.log(Object.entries(form));
 
   const [tag, setTag] = useState('');
   const [tagList, setTagList] = useState<TagItem[]>([]);
+
+  const validateForm = (formObj: Record<string, string>): boolean => {
+    const [isFilled, errors] = areAllFieldsFilled(formObj);
+    if (!isFilled) {
+      setDisplayError(errors);
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    if (validateForm(form)) {
+      (async () => {})().catch((submitError) => {
+        console.error(submitError);
+      });
+    }
+  };
 
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLInputElement>,
@@ -36,7 +59,12 @@ function CreatePage(): JSX.Element {
       <div className="container page">
         <div className="row">
           <div className="col-md-10 offset-md-1 col-xs-12">
-            <form>
+            <ul className="error-messages">
+              {!(Object.keys(displayError).length === 0) && (
+                <>{ShowError(displayError)}</>
+              )}
+            </ul>
+            <form onSubmit={handleSubmit}>
               <fieldset>
                 <fieldset className="form-group">
                   <input
@@ -83,7 +111,7 @@ function CreatePage(): JSX.Element {
                 </fieldset>
                 <button
                   className="btn btn-lg pull-xs-right btn-primary"
-                  type="button"
+                  type="submit"
                 >
                   Publish Article
                 </button>
