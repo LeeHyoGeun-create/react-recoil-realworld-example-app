@@ -5,7 +5,7 @@ type FormFields = Record<string, string>;
 type FormErrors = Record<string, string>;
 
 interface ValidationResult {
-  isValid: boolean;
+  isFilled: boolean;
   errors: FormErrors;
 }
 
@@ -18,7 +18,7 @@ const areAllFieldsFilled = (formObj: FormFields): ValidationResult => {
     }
   }
   return {
-    isValid: Object.keys(newError).length === 0,
+    isFilled: Object.keys(newError).length === 0,
     errors: newError,
   };
 };

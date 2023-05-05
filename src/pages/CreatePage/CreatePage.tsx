@@ -1,7 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 import { v4 as uuidv4 } from 'uuid';
 import ShowError from '../../components/ShowError';
 import useInputs from '../../hooks/useInputs';
+import { userInfoAtom } from '../../recoil/recoil_state';
+import createArticles from '../../util/api';
 import areAllFieldsFilled from '../../util/formValidation';
 import TagList, { type TagItem } from './TagList';
 
@@ -13,14 +17,15 @@ function CreatePage(): JSX.Element {
   });
   const { title, description, body } = form;
   const [displayError, setDisplayError] = useState({});
-
-  console.log(Object.entries(form));
+  const userInfo = useRecoilValue(userInfoAtom);
+  const navigate = useNavigate();
+  const { token } = userInfo.user;
 
   const [tag, setTag] = useState('');
   const [tagList, setTagList] = useState<TagItem[]>([]);
 
   const validateForm = (formObj: Record<string, string>): boolean => {
-    const [isFilled, errors] = areAllFieldsFilled(formObj);
+    const { isFilled, errors } = areAllFieldsFilled(formObj);
     if (!isFilled) {
       setDisplayError(errors);
       return false;
@@ -31,7 +36,18 @@ function CreatePage(): JSX.Element {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     if (validateForm(form)) {
-      (async () => {})().catch((submitError) => {
+      const tags = tagList.map((tagItem) => tagItem.tag);
+      (async () => {
+        const { slug, errors } = await createArticles(
+          { ...form, tagList: tags },
+          token,
+        );
+
+        if (Object.keys(errors).length === 0) {
+          navigate(`/article/${slug}`);
+        }
+        setDisplayError(errors);
+      })().catch((submitError) => {
         console.error(submitError);
       });
     }
@@ -41,6 +57,7 @@ function CreatePage(): JSX.Element {
     event: React.KeyboardEvent<HTMLInputElement>,
   ): void => {
     if (event.key === 'Enter') {
+      event.preventDefault();
       setTagList((prev) => [{ id: uuidv4(), tag }, ...prev]);
       setTag('');
     }
@@ -52,6 +69,14 @@ function CreatePage(): JSX.Element {
 
   const removeTag = (id: string): void => {
     setTagList((prev) => prev.filter((tagItem) => tagItem.id !== id));
+  };
+
+  const handleFormKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ): void => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+    }
   };
 
   return (
@@ -74,6 +99,7 @@ function CreatePage(): JSX.Element {
                     name="title"
                     value={title}
                     onChange={onChange}
+                    onKeyDown={handleFormKeyDown}
                   />
                 </fieldset>
                 <fieldset className="form-group">
@@ -84,6 +110,7 @@ function CreatePage(): JSX.Element {
                     name="description"
                     value={description}
                     onChange={onChange}
+                    onKeyDown={handleFormKeyDown}
                   />
                 </fieldset>
                 <fieldset className="form-group">
