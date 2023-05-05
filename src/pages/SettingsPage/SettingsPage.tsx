@@ -34,7 +34,7 @@ function SettingsPage(): JSX.Element {
       const response = await fetch(`${VITE_API_URL}/user`, {
         method: 'put',
         headers: {
-          authorization: `Bearer ${userInfo.user.token}`,
+          authorization: `Bearer ${userInfo.user?.token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
