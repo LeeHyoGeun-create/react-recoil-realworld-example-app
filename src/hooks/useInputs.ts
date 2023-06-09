@@ -3,13 +3,15 @@ import { useState, useCallback } from 'react';
 
 function useInputs<T extends Record<string, string>>(
   initialForm: T,
-): [
-  T,
-  (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void,
-  () => void,
-  (name: string, value: string) => void,
-  (newState: T) => void,
-] {
+): {
+  form: T;
+  onChange: (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
+  reset: () => void;
+  setValue: (name: string, value: string) => void;
+  setValues: (newState: T) => void;
+} {
   const [form, setForm] = useState<T>(initialForm);
   const reset = useCallback(() => {
     setForm(initialForm);
@@ -34,7 +36,7 @@ function useInputs<T extends Record<string, string>>(
     setForm((preState) => ({ ...preState, ...newSatate }));
   };
 
-  return [form, onChange, reset, setValue, setValues];
+  return { form, onChange, reset, setValue, setValues };
 }
 
 export default useInputs;
