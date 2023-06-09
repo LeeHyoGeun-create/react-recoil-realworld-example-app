@@ -9,7 +9,10 @@ import isEmpty from '../../util/isEmpty';
 const { VITE_API_URL } = import.meta.env;
 
 function SignInPage(): JSX.Element {
-  const [{ email, password }, onChange] = useInputs({
+  const {
+    form: { email, password },
+    onChange,
+  } = useInputs({
     email: '',
     password: '',
   });
