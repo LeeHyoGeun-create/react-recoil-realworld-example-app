@@ -5,7 +5,7 @@ function useInputs<T extends Record<string, string>>(
   initialForm: T,
 ): [
   T,
-  (event: React.ChangeEvent<HTMLInputElement>) => void,
+  (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void,
   () => void,
   (name: string, value: string) => void,
   (newState: T) => void,
@@ -18,8 +18,11 @@ function useInputs<T extends Record<string, string>>(
   const onChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ): void => {
+    if (event.target instanceof HTMLInputElement) {
+      const { name, value } = event.target;
+      setForm((preState) => ({ ...preState, [name]: value }));
+    }
     const { name, value } = event.target;
-
     setForm((preState) => ({ ...preState, [name]: value }));
   };
 
