@@ -1,6 +1,10 @@
 import isEmpty from './isEmpty';
 
-type FormFields = Record<string, string>;
+interface ValidateFormFields {
+  title: string;
+  description: string;
+  body: string;
+}
 
 type FormErrors = Record<string, string>;
 
@@ -9,12 +13,14 @@ interface ValidationResult {
   errors: FormErrors;
 }
 
-const areAllFieldsFilled = (formObj: FormFields): ValidationResult => {
+const areAllFieldsFilled = (formObj: ValidateFormFields): ValidationResult => {
   let newError: FormErrors = {};
   for (const [key, value] of Object.entries(formObj)) {
-    if (isEmpty(value)) {
-      newError = { ...newError, [key]: "can't be blank" };
-      break;
+    if (key !== 'tagList') {
+      if (isEmpty(value)) {
+        newError = { ...newError, [key]: "can't be blank" };
+        break;
+      }
     }
   }
   return {
