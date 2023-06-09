@@ -7,7 +7,10 @@ import { userInfoAtom, isLoginSelector } from '../../recoil/recoil_state';
 import ShowError from '../../components/ShowError';
 
 function SignUpPage(): JSX.Element {
-  const [{ username, email, password }, onChange] = useInputs({
+  const {
+    form: { username, email, password },
+    onChange,
+  } = useInputs({
     username: '',
     email: '',
     password: '',

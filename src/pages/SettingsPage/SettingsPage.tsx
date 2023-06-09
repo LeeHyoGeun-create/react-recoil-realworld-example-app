@@ -6,7 +6,7 @@ import { userInfoAtom } from '../../recoil/recoil_state';
 function SettingsPage(): JSX.Element {
   const [userInfo, setUserInfo] = useRecoilState(userInfoAtom);
   const userInfoReset = useResetRecoilState(userInfoAtom);
-  const [form, onChange] = useInputs({
+  const { form, onChange } = useInputs({
     image: userInfo.user.image,
     username: userInfo.user.username,
     bio: userInfo.user.bio,
