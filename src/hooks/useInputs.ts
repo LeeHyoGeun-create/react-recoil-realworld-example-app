@@ -15,7 +15,9 @@ function useInputs<T extends Record<string, string>>(
     setForm(initialForm);
   }, [initialForm]);
 
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  const onChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ): void => {
     const { name, value } = event.target;
 
     setForm((preState) => ({ ...preState, [name]: value }));
