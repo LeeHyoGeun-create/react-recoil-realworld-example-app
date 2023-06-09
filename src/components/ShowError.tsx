@@ -1,4 +1,4 @@
-type ErrorObject = Record<string, string>;
+import { type ErrorObject } from '../types/article';
 
 function ShowError(errorObject: ErrorObject): JSX.Element {
   return (
